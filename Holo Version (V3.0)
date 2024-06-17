@@ -1,7 +1,7 @@
-@name The Ultimate Turret E2 by Naki V2.0
+@name The Ultimate Turret E2 by Naki V3.0
 @inputs [Base Gun TurretBase ChairDriver ChairGunner ACFGun ACFGunSecondary Ammo1 Ammo2]:entity [CamDriver CamGunner EGPDriver EGPGunner]:wirelink
 @persist Interval RotationForce DampingForce AimMode GunLockRelease [Turret_Lock_Release_Button Switch_Aim_Mode_Button Switch_Gun_Button Gun_Tracking_Button Switch_View_Button Switch_Ammo_Button]:string
-@persist Elevation Depression [Inertia LocalAng2]:angle Pitch DragFunction DeltaFunction Lim:vector TurningSpeed
+@persist Elevation Depression TurretElevation TurretDepression TurretTraverse [Inertia LocalAng2]:angle Pitch DragFunction DeltaFunction Lim:vector TurningSpeed
 @persist Time Flip FireMode InfiniteAmmo [Reso1 Reso2]:vector2 AmmoSwitch LastSpeed PositionDriver PositionGunner TrackGun
 @outputs FireMain FireSecondary AimPos:vector InfiniteAmmo
 @outputs Unload Reload ActiveAP ActiveHE A D
@@ -20,11 +20,13 @@ if(first()){
     #-- Settings
     Interval=100
     
-    TurningSpeed=8
+	#Degrees/second
+    TurningSpeed=20
     
-    TurretElevation=60
-    TurretDepression=-20
-    
+    TurretElevation=20
+    TurretDepression=-9
+    TurretTraverse=90
+	
     Turret_Lock_Release_Button = "g"
     Switch_Aim_Mode_Button = "f"
     Switch_Gun_Button = "r"
@@ -44,18 +46,16 @@ if(first()){
     
     holoCreate(1)
     holoPos(1,TurretBase:pos())
-    holoAng(1,TurretBase:toWorld(ang(0,90,0)))
+    holoAng(1,TurretBase:angles())
     TurretBase:parentTo(holoEntity(1))
-    #holoPos(1,Base:toWorld(vec(-13.76,-7.41,59.72)))
     holoAng(1,Base:angles())
     holoParent(1,Base)
     holoAlpha(1,0)
     
     holoCreate(2)
     holoPos(2,Gun:pos())
-    holoAng(2,Gun:toWorld(ang(0,90,0)))
+    holoAng(2,Gun:angles())
     Gun:parentTo(holoEntity(2))
-    #holoPos(2,holoEntity(1):toWorld(vec(20.00,-3.34,22.710)))
     holoAng(2,holoEntity(1):angles())
     holoParent(2,1)
     holoAlpha(2,0)
@@ -433,10 +433,10 @@ if(clk("int")){
     
     DesiredAngle=GunLockRelease ? (AimMode ? GunAng : (CamUser["HitPos",vector] - Gun:pos()):toAngle()) : Base:angles()
     LocalAng=Base:toLocal(DesiredAngle)
-    LocalAng2=approachAngle(LocalAng2,LocalAng,TurningSpeed)
+    LocalAng2=approachAngle(LocalAng2,LocalAng,TurningSpeed/5)
     
-    holoAng(1,Base:toWorld(ang(0,LocalAng2:yaw(),0)))
-    holoAng(2,holoEntity(1):toWorld(ang(clamp(LocalAng2:pitch(),-40,20),0,0)))
+    holoAng(1,Base:toWorld(ang(0,clamp(LocalAng2:yaw(),-TurretTraverse,TurretTraverse),0)))
+    holoAng(2,holoEntity(1):toWorld(ang(clamp(LocalAng2:pitch(),-TurretElevation,TurretDepression),0,0)))
     if(TrackGun){
         A=Base:toLocal(holoEntity(2):angles()):yaw()>5
         D=Base:toLocal(holoEntity(2):angles()):yaw()<-5
