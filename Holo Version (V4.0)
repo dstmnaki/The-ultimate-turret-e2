@@ -1,4 +1,4 @@
-@name The Ultimate Turret E2 by Naki V3.0
+@name The Ultimate Turret E2 by Naki V4.0
 @inputs [Base Gun TurretBase ChairDriver ChairGunner ACFGun ACFGunSecondary Ammo1 Ammo2]:entity [CamDriver CamGunner EGPDriver EGPGunner]:wirelink
 @persist Interval RotationForce DampingForce AimMode GunLockRelease [Turret_Lock_Release_Button Switch_Aim_Mode_Button Switch_Gun_Button Gun_Tracking_Button Switch_View_Button Switch_Ammo_Button]:string
 @persist Elevation Depression TurretElevation TurretDepression TurretTraverse [Inertia LocalAng2]:angle Pitch DragFunction DeltaFunction Lim:vector TurningSpeed
@@ -20,13 +20,14 @@ if(first()){
     #-- Settings
     Interval=100
     
-	#Degrees/second
+    #Degrees/second
     TurningSpeed=20
     
     TurretElevation=20
     TurretDepression=-9
     TurretTraverse=90
-	
+    #above 180 makes it spin freely
+    
     Turret_Lock_Release_Button = "g"
     Switch_Aim_Mode_Button = "f"
     Switch_Gun_Button = "r"
@@ -435,7 +436,7 @@ if(clk("int")){
     LocalAng=Base:toLocal(DesiredAngle)
     LocalAng2=approachAngle(LocalAng2,LocalAng,TurningSpeed/5)
     
-    holoAng(1,Base:toWorld(ang(0,clamp(LocalAng2:yaw(),-TurretTraverse,TurretTraverse),0)))
+    holoAng(1,Base:toWorld(ang(0,TurretTraverse>180 ? LocalAng2:yaw() : clamp(LocalAng2:yaw(),-TurretTraverse,TurretTraverse),0)))
     holoAng(2,holoEntity(1):toWorld(ang(clamp(LocalAng2:pitch(),-TurretElevation,TurretDepression),0,0)))
     if(TrackGun){
         A=Base:toLocal(holoEntity(2):angles()):yaw()>5
