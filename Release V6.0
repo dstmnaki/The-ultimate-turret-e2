@@ -1,5 +1,5 @@
-@name The Ultimate Turret E2 by Naki V5.0
-@inputs [Base Gun TurretBase ChairDriver ChairGunner ACFGun ACFGunSecondary Ammo1 Ammo2]:entity [CamDriver CamGunner EGPDriver EGPGunner]:wirelink
+@name The Ultimate Turret E2 by Naki V6.0
+@inputs [Base Gun TurretBase ChairDriver ChairGunner ACFGun ACFGunSecondary Ammo1 Ammo2 DriverFirstPersonParent GunnerFirstPersonParent ThirdPersonParent]:entity [CamDriver CamGunner EGPDriver EGPGunner]:wirelink
 @persist Interval RotationForce DampingForce AimMode GunLockRelease [Turret_Lock_Release_Button Switch_Aim_Mode_Button Switch_Gun_Button Gun_Tracking_Button Switch_View_Button Switch_Ammo_Button]:string
 @persist Elevation Depression TurretElevation TurretDepression TurretTraverse [Inertia LocalAng2]:angle Pitch DragFunction DeltaFunction Lim:vector TurningSpeed
 @persist Time Flip FireMode InfiniteAmmo [Reso1 Reso2]:vector2 AmmoSwitch LastSpeed PositionDriver PositionGunner TrackGun
@@ -87,12 +87,10 @@ if(first()){
               )
     }
     
-    CamDriver["Position",vector]=vec(0,0,75)
-    CamDriver["Parent",entity]=holoEntity(1)
+    CamDriver["Parent",entity]=DriverFirstPersonParent
     CamDriver["Distance",number]=0
     
-    CamGunner["Position",vector]=vec(0,0,75)
-    CamGunner["Parent",entity]=holoEntity(1)
+    CamGunner["Parent",entity]=GunnerFirstPersonParent
     CamGunner["Distance",number]=0
     
     findIncludePlayerProps(owner())
@@ -347,11 +345,11 @@ if(clk("int")){
     }
     if(changed(ChairDriver:driver():keyPressed(Switch_View_Button))&ChairDriver:driver():keyPressed(Switch_View_Button)){
         PositionDriver=!PositionDriver
-        CamDriver["Position",vector] = PositionDriver ? vec(95,20,25) : vec(0,0,75)
+        CamDriver["Parent",entity] = PositionDriver ? ThirdPersonParent : DriverFirstPersonParent
     }
     if(changed(ChairGunner:driver():keyPressed("v"))&ChairGunner:driver():keyPressed("v")){
         PositionGunner=!PositionGunner
-        CamGunner["Position",vector] = PositionGunner ? vec(95,20,25) : vec(0,0,75)
+        CamGunner["Parent",entity] = PositionGunner ? ThirdPersonParent : GunnerFirstPersonParent
     }
     if(changed(ChairDriver:driver():keyAttack2())){
         CamDriver["FOV",number]=ChairDriver:driver():keyAttack2() ? 10 : 100
