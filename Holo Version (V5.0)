@@ -1,4 +1,4 @@
-@name The Ultimate Turret E2 by Naki V4.0
+@name The Ultimate Turret E2 by Naki V5.0
 @inputs [Base Gun TurretBase ChairDriver ChairGunner ACFGun ACFGunSecondary Ammo1 Ammo2]:entity [CamDriver CamGunner EGPDriver EGPGunner]:wirelink
 @persist Interval RotationForce DampingForce AimMode GunLockRelease [Turret_Lock_Release_Button Switch_Aim_Mode_Button Switch_Gun_Button Gun_Tracking_Button Switch_View_Button Switch_Ammo_Button]:string
 @persist Elevation Depression TurretElevation TurretDepression TurretTraverse [Inertia LocalAng2]:angle Pitch DragFunction DeltaFunction Lim:vector TurningSpeed
@@ -449,7 +449,7 @@ if(clk("int")){
     TurretSpeedYaw=abs(Base:toLocal(holoEntity(1):angles()):yaw())
     TurretSpeed=max(TurretSpeedPitch,TurretSpeedYaw)
     Test=TurretSpeed-LastSpeed
-    soundVolume("sfx",100*clamp(abs(change(Test))*(abs(change(Test))>0.05),0,1))
+    soundVolume("sfx",100*clamp(abs(~Test)*(abs(~Test)>0.05),0,1))
     LastSpeed=TurretSpeed
     
     Ranger=rangerOffset(99999,holoEntity(2):toWorld(vec(125,0,0)),holoEntity(2):forward())
